@@ -88,6 +88,24 @@ export default function DiscoveryClient({ initialParties, user }: DiscoveryClien
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+        {/* Top Promotional / Advertising Slot */}
+        <section className="relative rounded-2xl p-4 bg-gradient-to-r from-purple-950/40 via-zinc-950 to-pink-950/40 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="px-2 py-0.5 rounded bg-purple-500/20 text-purple-400 border border-purple-500/40 text-[10px] font-black uppercase tracking-wider">
+              PROMO SLOT
+            </span>
+            <p className="text-xs text-zinc-300 font-medium">
+              <span className="text-pink-400 font-bold uppercase">DUPLEX ROOFTOP PRAHA:</span> Sunset to Sunrise House sessions tonight!
+            </p>
+          </div>
+          <Link
+            href="/dashboard"
+            className="text-[11px] font-bold text-zinc-400 hover:text-white uppercase tracking-wider flex items-center gap-1 shrink-0"
+          >
+            VLASTNÁ REKLAMA PRE KLUBY →
+          </Link>
+        </section>
+
         {/* Primary Hook Banner */}
         <section className="relative rounded-2xl p-6 md:p-8 bg-gradient-to-r from-zinc-950 via-zinc-900 to-black border border-zinc-800/80 overflow-hidden shadow-2xl">
           <div className="absolute top-0 right-0 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl pointer-events-none" />

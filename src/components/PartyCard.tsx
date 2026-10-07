@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Clock, Calendar, Sparkles } from "lucide-react";
+import { MapPin, Clock, Calendar, Sparkles, Star } from "lucide-react";
 
 export interface PartyCardData {
   id: string;
@@ -13,6 +13,8 @@ export interface PartyCardData {
   startTime: string;
   endTime?: string | null;
   is18Plus?: boolean;
+  avgRating?: string | null;
+  ratingCount?: number;
 }
 
 interface PartyCardProps {
@@ -54,9 +56,18 @@ export default function PartyCard({ party, isSelected, onSelect }: PartyCardProp
       {/* Info */}
       <div className="flex flex-col justify-between flex-1 min-w-0">
         <div>
-          <div className="flex items-center gap-2 text-xs font-semibold text-cyan-400 mb-1">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>{party.music}</span>
+          <div className="flex items-center justify-between text-xs font-semibold mb-1">
+            <div className="flex items-center gap-1.5 text-cyan-400">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{party.music}</span>
+            </div>
+            {party.avgRating && (
+              <div className="flex items-center gap-1 text-amber-400 font-bold text-[11px]">
+                <Star className="w-3 h-3 fill-amber-400" />
+                <span>{party.avgRating}</span>
+                <span className="text-zinc-500 font-normal">({party.ratingCount})</span>
+              </div>
+            )}
           </div>
 
           <h3 className="text-base md:text-lg font-black text-white group-hover:text-pink-400 transition line-clamp-2 uppercase tracking-tight">

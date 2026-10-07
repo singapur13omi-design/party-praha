@@ -31,47 +31,136 @@ model City {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  email        String    @unique
-  name         String
-  passwordHash String
-  role         String    @default("USER") // "USER", "ORGANIZER", "ADMIN"
-  ageVerified  Boolean   @default(false)
-  parties      Party[]   @relation("OrganizerParties")
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  id                  String         @id @default(cuid())
+  email               String         @unique
+  name                String
+  passwordHash        String
+  avatarUrl           String?
+  phone               String?
+  role                String         @default("USER") // "USER", "ADMIN"
+  ageVerified         Boolean        @default(false)
+  identityVerified    Boolean        @default(false)
+  
+  // Relations
+  parties             Party[]        @relation("OrganizerParties")
+  requests            PartyRequest[]
+  tickets             Ticket[]
+  attendances         Attendance[]
+  ratings             Rating[]
+
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 }
 
 model Party {
-  id          String   @id @default(cuid())
-  name        String
-  type        String   // "CLUB", "HOUSE", "VIP", "RAVE", "PRIVATE", "FESTIVAL", "OTHER"
-  music       String   // "House", "Techno", "EDM", "Hip-Hop", "DnB", "Latin", "R'n'B", "Other"
-  description String   @db.Text
-  image       String   // URL or placeholder image path
-  location    String   // Venue / Club address name (e.g. "Roxy Prague", "Cross Club")
-  latitude    Float
-  longitude   Float
-  date        String   // YYYY-MM-DD for easy day queries
-  startTime   String   // e.g. "22:00"
-  endTime     String?  // e.g. "06:00"
-  is18Plus    Boolean  @default(false)
-  status      String   @default("ACTIVE") // "ACTIVE", "CANCELLED", "PAST"
+  id                  String         @id @default(cuid())
+  name                String
+  type                String         // "CLUB", "HOUSE", "VIP", "RAVE", "PRIVATE", "FESTIVAL", "OTHER"
+  music               String         // "House", "Techno", "EDM", "Hip-Hop", "DnB", "Latin", "R'n'B", "Other"
+  description         String         @db.Text
+  image               String         // URL or visual banner
+  location            String         // Venue / Club address
+  latitude            Float
+  longitude           Float
+  date                String         // YYYY-MM-DD
+  startTime           String         // e.g. "22:00"
+  endTime             String?        // e.g. "06:00"
+  capacity            Int            @default(150)
+  entryType           String         @default("FREE") // "FREE", "PAID", "VIP_ONLY", "INVITE_ONLY"
+  is18Plus            Boolean        @default(false)
+  isPromoted          Boolean        @default(false)
+  status              String         @default("ACTIVE") // "ACTIVE", "ENDED", "ARCHIVED", "CANCELLED"
   
-  cityId      String
-  city        City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  cityId              String
+  city                City           @relation(fields: [cityId], references: [id], onDelete: Cascade)
   
-  countryId   String
-  country     Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  countryId           String
+  country             Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
 
-  organizerId String
-  organizer   User     @relation("OrganizerParties", fields: [organizerId], references: [id], onDelete: Cascade)
+  organizerId         String
+  organizer           User           @relation("OrganizerParties", fields: [organizerId], references: [id], onDelete: Cascade)
 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  requests            PartyRequest[]
+  tickets             Ticket[]
+  attendances         Attendance[]
+  ratings             Rating[]
+
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 
   @@index([cityId])
   @@index([countryId])
   @@index([date])
   @@index([status])
+  @@index([isPromoted])
+}
+
+model PartyRequest {
+  id          String   @id @default(cuid())
+  partyId     String
+  party       Party    @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  status      String   @default("PENDING") // "PENDING", "APPROVED", "REJECTED", "CANCELLED"
+  note        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([partyId, userId])
+  @@index([partyId])
+  @@index([userId])
+  @@index([status])
+}
+
+model Ticket {
+  id          String      @id @default(cuid())
+  qrToken     String      @unique // Secure random token
+  partyId     String
+  party       Party       @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String      @default("VALID") // "VALID", "USED", "CANCELLED"
+  
+  attendance  Attendance?
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([partyId])
+  @@index([userId])
+  @@index([qrToken])
+}
+
+model Attendance {
+  id          String    @id @default(cuid())
+  ticketId    String?   @unique
+  ticket      Ticket?   @relation(fields: [ticketId], references: [id], onDelete: SetNull)
+  partyId     String
+  party       Party     @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  checkedInAt DateTime  @default(now())
+
+  @@unique([partyId, userId])
+  @@index([partyId])
+  @@index([userId])
+}
+
+model Rating {
+  id          String    @id @default(cuid())
+  partyId     String
+  party       Party     @relation(fields: [partyId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  stars       Int       // 1 to 5
+  comment     String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([partyId, userId])
+  @@index([partyId])
+  @@index([userId])
 }
