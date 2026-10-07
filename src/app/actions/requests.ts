@@ -26,6 +26,19 @@ export async function requestAttendanceAction(partyId: string, note?: string) {
       return { error: "Táto akcia už nie je aktívna." };
     }
 
+    // 18+ / VIP Enforcement: Check if user has ageVerified for 18+ or VIP parties
+    if (party.is18Plus || party.type === "VIP") {
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { ageVerified: true },
+      });
+      if (!user?.ageVerified) {
+        return {
+          error: "Vstup na túto 18+ / VIP akciu vyžaduje overenie veku (18+ VERIFIED) v profile.",
+        };
+      }
+    }
+
     // Check existing request
     const existing = await prisma.partyRequest.findUnique({
       where: {

@@ -26,6 +26,19 @@ export async function createPartyAction(formData: FormData) {
       return { error: "Vyplň všetky povinné polia." };
     }
 
+    // 18+ Enforcement: Check user's age verification if creating an 18+ party
+    if (is18Plus) {
+      const user = await prisma.user.findUnique({
+        where: { id: session.userId },
+        select: { ageVerified: true },
+      });
+      if (!user?.ageVerified) {
+        return {
+          error: "Pre vytvorenie 18+ akcie musíš mať v profile overený vek (18+ VERIFIED).",
+        };
+      }
+    }
+
     if (!image) {
       image = "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=1200&auto=format&fit=crop";
     }

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { createSession, clearSession } from "@/lib/auth";
+import { createSession, clearSession, getSession } from "@/lib/auth";
 
 export async function registerAction(formData: FormData) {
   try {
@@ -80,3 +80,23 @@ export async function logoutAction() {
   await clearSession();
   return { success: true };
 }
+
+export async function verifyAgeAction() {
+  try {
+    const session = await getSession();
+    if (!session) {
+      return { error: "Musíš byť prihlásený." };
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: session.userId },
+      data: { ageVerified: true },
+    });
+
+    return { success: true, ageVerified: updated.ageVerified };
+  } catch (err) {
+    console.error("verifyAgeAction error:", err);
+    return { error: "Chyba pri overovaní veku." };
+  }
+}
+

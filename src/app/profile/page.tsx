@@ -19,6 +19,8 @@ import {
   LayoutDashboard,
   ShieldCheck,
 } from "lucide-react";
+import AgeVerifyButton from "@/components/AgeVerifyButton";
+import QRCodeImage from "@/components/QRCodeImage";
 
 export const dynamic = "force-dynamic";
 
@@ -110,11 +112,7 @@ export default async function ProfilePage() {
                   <Shield className="w-3 h-3" />
                   {user.role}
                 </span>
-                {user.ageVerified && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
-                    18+ VERIFIED ✓
-                  </span>
-                )}
+                <AgeVerifyButton isVerified={user.ageVerified} />
                 {user.identityVerified && (
                   <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[10px] font-bold flex items-center gap-1">
                     <ShieldCheck className="w-3 h-3" /> IDENTITY VERIFIED ✓
@@ -168,19 +166,20 @@ export default async function ProfilePage() {
                     <span className="truncate">{t.party.location}</span>
                   </div>
 
-                  {/* QR Code Presentation Box */}
-                  <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between">
-                    <div>
+                  {/* QR Code Presentation Box with real scannable barcode */}
+                  <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
                       <div className="text-[10px] uppercase font-bold text-zinc-500">
                         Vstupný QR Token
                       </div>
-                      <div className="text-xs font-mono font-bold text-pink-400 tracking-wider">
+                      <div className="text-xs font-mono font-bold text-pink-400 tracking-wider break-all">
                         {t.qrToken}
                       </div>
+                      <p className="text-[10px] text-zinc-500 mt-1">
+                        Ukáž organizátorovi pri vstupe na naskenovanie fotoaparátom.
+                      </p>
                     </div>
-                    <div className="p-2 rounded-xl bg-zinc-900 border border-zinc-700 text-cyan-400">
-                      <QrCode className="w-6 h-6" />
-                    </div>
+                    <QRCodeImage value={t.qrToken} />
                   </div>
                 </div>
               ))}
