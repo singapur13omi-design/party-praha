@@ -178,8 +178,8 @@ export default function DiscoveryClient({ initialParties, user }: DiscoveryClien
 
         {/* Split Grid: Left = Discovery List, Right = Live Interactive Map */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px]">
-          {/* Party List Feed (lg:col-span-6 or 7) */}
-          <div className="lg:col-span-6 flex flex-col gap-4">
+          {/* Party List Feed (order-2 on mobile, order-1 on desktop) */}
+          <div className="order-2 lg:order-1 lg:col-span-6 flex flex-col gap-4">
             <div className="flex items-center justify-between px-1">
               <h2 className="text-base font-black uppercase tracking-wider text-zinc-300 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-pink-500" />
@@ -223,8 +223,8 @@ export default function DiscoveryClient({ initialParties, user }: DiscoveryClien
             )}
           </div>
 
-          {/* Interactive Map & Selected Marker Preview (lg:col-span-6) */}
-          <div className="lg:col-span-6 flex flex-col gap-4">
+          {/* Interactive Map & Selected Marker Preview (order-1 on mobile, order-2 on desktop) */}
+          <div className="order-1 lg:order-2 lg:col-span-6 flex flex-col gap-4">
             <div className="h-[400px] lg:h-[550px] w-full relative">
               <PartyMap
                 parties={filteredParties}
