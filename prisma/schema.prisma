@@ -1,0 +1,77 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Country {
+  id        String   @id @default(cuid())
+  code      String   @unique // e.g. "cz", "sk"
+  name      String   // e.g. "Czech Republic", "Slovakia"
+  cities    City[]
+  parties   Party[]
+  createdAt DateTime @default(now())
+}
+
+model City {
+  id        String   @id @default(cuid())
+  slug      String   @unique // e.g. "praha", "brno", "bratislava"
+  name      String   // e.g. "Praha", "Brno"
+  latitude  Float
+  longitude Float
+  countryId String
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  parties   Party[]
+  createdAt DateTime @default(now())
+
+  @@index([countryId])
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String    @default("USER") // "USER", "ORGANIZER", "ADMIN"
+  ageVerified  Boolean   @default(false)
+  parties      Party[]   @relation("OrganizerParties")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Party {
+  id          String   @id @default(cuid())
+  name        String
+  type        String   // "CLUB", "HOUSE", "VIP", "RAVE", "PRIVATE", "FESTIVAL", "OTHER"
+  music       String   // "House", "Techno", "EDM", "Hip-Hop", "DnB", "Latin", "R'n'B", "Other"
+  description String   @db.Text
+  image       String   // URL or placeholder image path
+  location    String   // Venue / Club address name (e.g. "Roxy Prague", "Cross Club")
+  latitude    Float
+  longitude   Float
+  date        String   // YYYY-MM-DD for easy day queries
+  startTime   String   // e.g. "22:00"
+  endTime     String?  // e.g. "06:00"
+  is18Plus    Boolean  @default(false)
+  status      String   @default("ACTIVE") // "ACTIVE", "CANCELLED", "PAST"
+  
+  cityId      String
+  city        City     @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  
+  countryId   String
+  country     Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+
+  organizerId String
+  organizer   User     @relation("OrganizerParties", fields: [organizerId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([countryId])
+  @@index([date])
+  @@index([status])
+}
