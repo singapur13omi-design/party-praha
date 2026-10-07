@@ -72,10 +72,14 @@ export default function Navbar({ user, locale, onLocaleChange, onPartyCreated }:
             {/* User Session */}
             {user ? (
               <div className="flex items-center gap-2">
-                <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs font-semibold text-zinc-300">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-semibold text-zinc-300 transition"
+                  title="Otvoriť profil"
+                >
                   <User className="w-3.5 h-3.5 text-pink-400" />
-                  <span>{user.name}</span>
-                </div>
+                  <span className="max-w-[120px] truncate">{user.name}</span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   title="Odhlásiť"

@@ -31,7 +31,6 @@ export default function PartyMap({ parties, selectedPartyId, onSelectParty }: Ma
     if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
-      // Initialize map centered in Prague
       const map = L.map(mapContainerRef.current, {
         zoomControl: false,
         attributionControl: false,
@@ -39,13 +38,22 @@ export default function PartyMap({ parties, selectedPartyId, onSelectParty }: Ma
 
       L.control.zoom({ position: "bottomright" }).addTo(map);
 
-      // Dark futuristic Map Tiles (CartoDB Dark Matter)
+      // Reliable OpenStreetMap CartoDB Dark Matter tile layer
       L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
         maxZoom: 19,
         subdomains: "abcd",
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
       }).addTo(map);
 
       mapInstanceRef.current = map;
+
+      // Force recalculation of container size after mounting
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 500);
     }
 
     const map = mapInstanceRef.current;

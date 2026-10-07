@@ -1,4 +1,17 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  background-color: #06070b !important;
+  z-index: 10 !important;
+}
+
+.custom-neon-marker {
+  background: transparent !important;
+  border: none !important;
+}
 
 @layer base {
   :root {
